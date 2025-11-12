@@ -62,87 +62,99 @@ app = Dash(__name__)
 server = app.server
 
 app.layout = html.Div([
-    html.H2("💼 Employee Performance Dashboard", 
+    html.H2("💼 Employee Performance Dashboard",
             style={"textAlign": "center", "color": "#007bff", "marginBottom": "10px"}),
 
     html.P("Analyze workforce performance, satisfaction, productivity, and resignation patterns interactively.",
-           style={"textAlign": "center", "color": "#555", "marginBottom": "30px"}),
+           style={"textAlign": "center", "color": "#555", "marginBottom": "25px"}),
 
-    # KPI Cards Row
+    # KPI CARDS
     html.Div([
         html.Div([
             html.H4("👥 Total Employees", style={"color": "#555", "fontWeight": "600"}),
-            html.H3(f"{total_employees:,}", style={"color": "#007bff", "margin": "0"})
+            html.H3(f"{total_employees:,}", style={"color": "#007bff"})
         ], className="card"),
         html.Div([
             html.H4("📉 Resignation Rate", style={"color": "#555", "fontWeight": "600"}),
-            html.H3(f"{resigned_rate:.1f}%", style={"color": "#dc3545", "margin": "0"})
+            html.H3(f"{resigned_rate:.1f}%", style={"color": "#dc3545"})
         ], className="card"),
         html.Div([
             html.H4("⭐ Avg Performance", style={"color": "#555", "fontWeight": "600"}),
-            html.H3(f"{avg_perf:.2f}", style={"color": "#28a745", "margin": "0"})
+            html.H3(f"{avg_perf:.2f}", style={"color": "#28a745"})
         ], className="card"),
         html.Div([
             html.H4("😊 Avg Satisfaction", style={"color": "#555", "fontWeight": "600"}),
-            html.H3(f"{avg_satisfaction:.2f}", style={"color": "#17a2b8", "margin": "0"})
+            html.H3(f"{avg_satisfaction:.2f}", style={"color": "#17a2b8"})
         ], className="card"),
         html.Div([
             html.H4("⚙ Avg Productivity", style={"color": "#555", "fontWeight": "600"}),
-            html.H3(f"{avg_productivity:.2f}", style={"color": "#ffc107", "margin": "0"})
+            html.H3(f"{avg_productivity:.2f}", style={"color": "#ffc107"})
         ], className="card"),
     ], style={
-        "display": "flex", "justifyContent": "space-between", "margin": "30px 0",
-        "flexWrap": "wrap", "gap": "10px"
+        "display": "flex", "justifyContent": "space-around", "flexWrap": "wrap",
+        "gap": "10px", "margin": "25px 0"
     }),
 
-    # Sidebar Filters
+    # FLEX CONTAINER (SIDEBAR + DASHBOARD)
     html.Div([
-        html.Label("🏢 Department", style={"fontWeight": "600"}),
-        dcc.Dropdown(
-            id="dept-filter",
-            options=[{"label": d, "value": d} for d in sorted(df["Department"].dropna().unique())],
-            multi=True, placeholder="Select department(s)"
-        ),
-        html.Br(),
+        # Sidebar
+        html.Div([
+            html.Label("🏢 Department", style={"fontWeight": "600"}),
+            dcc.Dropdown(
+                id="dept-filter",
+                options=[{"label": d, "value": d} for d in sorted(df["Department"].dropna().unique())],
+                multi=True, placeholder="Select department(s)"
+            ),
+            html.Br(),
+            html.Label("⚧ Gender", style={"fontWeight": "600"}),
+            dcc.Dropdown(
+                id="gender-filter",
+                options=[{"label": g, "value": g} for g in sorted(df["Gender"].dropna().unique())],
+                multi=True, placeholder="Select gender(s)"
+            ),
+            html.Br(),
+            html.P("🔍 Use filters to explore workforce insights",
+                   style={"color": "#777", "fontSize": "13px", "fontStyle": "italic"}),
+        ], style={
+            "flex": "1", "minWidth": "250px", "maxWidth": "280px",
+            "background": "#f8f9fa", "padding": "18px", "borderRadius": "10px",
+            "boxShadow": "0 2px 8px rgba(0,0,0,0.1)"
+        }),
 
-        html.Label("⚧ Gender", style={"fontWeight": "600"}),
-        dcc.Dropdown(
-            id="gender-filter",
-            options=[{"label": g, "value": g} for g in sorted(df["Gender"].dropna().unique())],
-            multi=True, placeholder="Select gender(s)"
-        ),
-        html.Br(),
-        html.P("🔍 Use filters to explore workforce insights", 
-               style={"color": "#777", "fontSize": "13px", "fontStyle": "italic"}),
+        # Dashboard Graphs
+        html.Div([
+            dcc.Graph(id="perf-vs-satisfaction"),
+            dcc.Graph(id="prod-by-dept"),
+            dcc.Graph(id="resignation-by-dept"),
+            dcc.Graph(id="tenure-vs-resign"),
+            dcc.Graph(id="corr-matrix"),
+            dcc.Graph(id="confusion-matrix"),
+            dcc.Graph(id="feature-importance"),
+        ], style={
+            "flex": "3", "paddingLeft": "20px"
+        })
     ], style={
-        "width": "22%", "display": "inline-block", "verticalAlign": "top",
-        "background": "#f8f9fa", "padding": "20px", "borderRadius": "10px",
-        "boxShadow": "0 2px 8px rgba(0,0,0,0.1)", "height": "100%"
+        "display": "flex", "gap": "20px", "alignItems": "flex-start", "flexWrap": "wrap"
     }),
 
-    # Main Dashboard Area
+    # LIVE DASHBOARD EMBED (Power BI, Streamlit, etc.)
     html.Div([
-        dcc.Graph(id="perf-vs-satisfaction"),
-        dcc.Graph(id="prod-by-dept"),
-        dcc.Graph(id="resignation-by-dept"),
-        dcc.Graph(id="tenure-vs-resign"),
-        dcc.Graph(id="corr-matrix"),
-        dcc.Graph(id="confusion-matrix"),
-        dcc.Graph(id="feature-importance"),
-    ], style={
-        "width": "75%", "display": "inline-block", "paddingLeft": "25px",
-        "verticalAlign": "top"
-    }),
+        html.H3("🌐 Live Dashboard", style={"textAlign": "center", "color": "#007bff"}),
+        html.Iframe(
+            src="https://your-live-dashboard-link-here",
+            style={"width": "100%", "height": "600px", "border": "none", "borderRadius": "10px",
+                   "boxShadow": "0 2px 8px rgba(0,0,0,0.1)"}
+        )
+    ], style={"marginTop": "40px"}),
 
     html.Hr(),
     html.P("© 2025 Tobechukwu Edwin | Interactive HR Analytics Dashboard",
            style={"textAlign": "center", "color": "#777", "fontSize": "13px", "marginTop": "10px"})
 ], style={
-    "fontFamily": "Segoe UI, sans-serif", 
-    "padding": "20px", 
+    "fontFamily": "Segoe UI, sans-serif",
+    "padding": "20px",
     "background": "#f6f7fb"
 })
-
 
 # CALLBACKS
 @app.callback(
